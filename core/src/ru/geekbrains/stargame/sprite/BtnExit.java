@@ -16,11 +16,6 @@ public class BtnExit extends Sprite {
     }
 
     @Override
-    public void resize(Rect worldBounds) {
-
-    }
-
-    @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         if (isMe(touch)) scale = 0.75f;
         return super.touchDown(touch, pointer);
