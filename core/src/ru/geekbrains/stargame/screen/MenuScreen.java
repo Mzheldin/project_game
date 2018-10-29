@@ -41,7 +41,7 @@ public class MenuScreen extends Base2DScreen {
         background = new Background(new TextureRegion(bgTexture));
         textureAtlas = new TextureAtlas("menuAtlas.tpack");
         btnExit = new BtnExit(textureAtlas);
-        btnPlay = new BtnPlay(textureAtlas);
+        btnPlay = new BtnPlay(textureAtlas, starGame);
         stars =new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(textureAtlas);
@@ -100,9 +100,7 @@ public class MenuScreen extends Base2DScreen {
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-
         btnPlay.touchUp(touch, pointer);
-        if (btnPlay.isMe(touch)) starGame.setScreen(new AnotherScreen());
         btnExit.touchUp(touch, pointer);
         return super.touchUp(touch, pointer);
     }
