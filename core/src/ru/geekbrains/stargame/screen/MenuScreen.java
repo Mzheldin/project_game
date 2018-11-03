@@ -1,5 +1,6 @@
 package ru.geekbrains.stargame.screen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,31 +8,32 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.geekbrains.stargame.StarGame;
+import ru.geekbrains.stargame.base.ActionListener;
 import ru.geekbrains.stargame.base.Base2DScreen;
 import ru.geekbrains.stargame.math.Rect;
 import ru.geekbrains.stargame.sprite.Background;
-import ru.geekbrains.stargame.sprite.BtnExit;
-import ru.geekbrains.stargame.sprite.BtnPlay;
+import ru.geekbrains.stargame.sprite.ButtonExit;
+import ru.geekbrains.stargame.sprite.ButtonPlay;
 import ru.geekbrains.stargame.sprite.Star;
 
-public class MenuScreen extends Base2DScreen {
+public class MenuScreen extends Base2DScreen implements ActionListener {
 
     private static final int STAR_COUNT = 256;
 
-    private Texture bgTexture;
-    private BtnExit btnExit;
-    private BtnPlay btnPlay;
-    private Background background;
+    private Game game;
 
+    private Texture bgTexture;
+    private Background background;
 
     private TextureAtlas textureAtlas;
     private Star[] stars;
 
-    private StarGame starGame;
+    private ButtonExit buttonExit;
+    private ButtonPlay buttonPlay;
 
-    public MenuScreen (StarGame starGame){
-        this.starGame = starGame;
+    public MenuScreen(Game game) {
+        super();
+        this.game = game;
     }
 
     @Override
@@ -40,12 +42,12 @@ public class MenuScreen extends Base2DScreen {
         bgTexture = new Texture("bg.png");
         background = new Background(new TextureRegion(bgTexture));
         textureAtlas = new TextureAtlas("menuAtlas.tpack");
-        btnExit = new BtnExit(textureAtlas);
-        btnPlay = new BtnPlay(textureAtlas, starGame);
         stars =new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(textureAtlas);
         }
+        buttonExit = new ButtonExit(textureAtlas, this);
+        buttonPlay = new ButtonPlay(textureAtlas, this);
     }
 
     @Override
@@ -67,11 +69,11 @@ public class MenuScreen extends Base2DScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
-        btnExit.draw(batch);
-        btnPlay.draw(batch);
         for (int i = 0; i < stars.length; i++) {
             stars[i].draw(batch);
         }
+        buttonExit.draw(batch);
+        buttonPlay.draw(batch);
         batch.end();
     }
 
@@ -81,6 +83,8 @@ public class MenuScreen extends Base2DScreen {
         for (int i = 0; i < stars.length; i++) {
             stars[i].resize(worldBounds);
         }
+        buttonExit.resize(worldBounds);
+        buttonPlay.resize(worldBounds);
     }
 
     @Override
@@ -90,18 +94,26 @@ public class MenuScreen extends Base2DScreen {
         super.dispose();
     }
 
-
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        btnPlay.touchDown(touch, pointer);
-        btnExit.touchDown(touch, pointer);
+        buttonExit.touchDown(touch, pointer);
+        buttonPlay.touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        btnPlay.touchUp(touch, pointer);
-        btnExit.touchUp(touch, pointer);
+        buttonExit.touchUp(touch, pointer);
+        buttonPlay.touchUp(touch, pointer);
         return super.touchUp(touch, pointer);
+    }
+
+    @Override
+    public void actionPerformed(Object src) {
+        if (src == buttonExit) {
+            Gdx.app.exit();
+        } else if (src == buttonPlay) {
+            game.setScreen(new GameScreen());
+        }
     }
 }
