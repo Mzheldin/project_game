@@ -53,7 +53,7 @@ public class GameScreen extends Base2DScreen {
         }
         bulletPool = new BulletPool();
         mainShip = new MainShip(textureAtlas, bulletPool);
-        shipPool = new ShipPool(textureAtlas, bulletPool);
+        shipPool = new ShipPool();
         time = 0f;
         period = 1f;
         musFon = Gdx.audio.newMusic(Gdx.files.internal("mus_fon.mp3"));
