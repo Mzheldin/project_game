@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.base.Sprite;
 import ru.geekbrains.stargame.math.Rect;
+import ru.geekbrains.stargame.pool.ExplosionPool;
 
 public class Bullet extends Sprite {
 
@@ -12,8 +13,10 @@ public class Bullet extends Sprite {
     private Vector2 v = new Vector2();
     private int damage;
     private Object owner;
+    private ExplosionPool explosionPool;
 
-    public Bullet() {
+    public Bullet(ExplosionPool explosionPool) {
+        this.explosionPool = explosionPool;
         regions = new TextureRegion[1];
     }
 
@@ -57,6 +60,11 @@ public class Bullet extends Sprite {
 
     public void setOwner(Object owner) {
         this.owner = owner;
+    }
+
+    public void bulletboom() {
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(getHeight() * 1.5f, pos);
     }
 }
 
