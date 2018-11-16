@@ -30,11 +30,16 @@ public abstract class Ship extends Sprite {
     protected int hp;
     protected TextureRegion bulletRegion;
 
-    private Sound shootSound;
+    protected enum Mode {NORMAL, FIRE}
+    protected Mode mode;
 
-    public Ship(TextureRegion region, int rows, int cols, int frames, Sound shootSound) {
+    private Sound shootSound;
+    private Sound shootSound2;
+
+    public Ship(TextureRegion region, int rows, int cols, int frames, Sound shootSound, Sound shootSound2) {
         super(region, rows, cols, frames);
         this.shootSound = shootSound;
+        this.shootSound2 = shootSound2;
     }
 
     public Ship(Sound shootSound) {
@@ -49,7 +54,8 @@ public abstract class Ship extends Sprite {
     protected void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, pos, bulletV, bulletHeight, worldBounds, bulletDamage);
-        shootSound.play();
+        if (mode == Mode.NORMAL) shootSound.play();
+        else shootSound2.play();
     }
 
     @Override
@@ -63,7 +69,7 @@ public abstract class Ship extends Sprite {
 
     public void boom() {
         Explosion explosion = explosionPool.obtain();
-        explosion.set(getHeight(), pos);
+        explosion.set(getHeight(), pos, true);
     }
 
     public void damage(int damage) {
@@ -73,5 +79,13 @@ public abstract class Ship extends Sprite {
         if (hp <= 0) {
             destroy();
         }
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public boolean isFireMode() {
+        return mode == Mode.FIRE;
     }
 }

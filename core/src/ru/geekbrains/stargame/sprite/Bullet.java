@@ -3,6 +3,7 @@ package ru.geekbrains.stargame.sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.geekbrains.stargame.base.Ship;
 import ru.geekbrains.stargame.base.Sprite;
 import ru.geekbrains.stargame.math.Rect;
 import ru.geekbrains.stargame.pool.ExplosionPool;
@@ -12,7 +13,7 @@ public class Bullet extends Sprite {
     private Rect worldBounds;
     private Vector2 v = new Vector2();
     private int damage;
-    private Object owner;
+    private Ship owner;
     private ExplosionPool explosionPool;
 
     public Bullet(ExplosionPool explosionPool) {
@@ -21,7 +22,7 @@ public class Bullet extends Sprite {
     }
 
     public void set(
-            Object owner,
+            Ship owner,
             TextureRegion region,
             Vector2 pos0,
             Vector2 v0,
@@ -40,6 +41,9 @@ public class Bullet extends Sprite {
 
     @Override
     public void update(float delta) {
+        if (getOwner().isFireMode()){
+            bulletboom();
+        }
         this.pos.mulAdd(v, delta);
         if (isOutside(worldBounds)) {
             destroy();
@@ -54,17 +58,17 @@ public class Bullet extends Sprite {
         this.damage = damage;
     }
 
-    public Object getOwner() {
+    public Ship getOwner() {
         return owner;
     }
 
-    public void setOwner(Object owner) {
+    public void setOwner(Ship owner) {
         this.owner = owner;
     }
 
     public void bulletboom() {
         Explosion explosion = explosionPool.obtain();
-        explosion.set(getHeight() * 1.5f, pos);
+        explosion.set(getHeight() * 2f, pos, false);
     }
 }
 

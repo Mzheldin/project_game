@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.base.Ship;
-import ru.geekbrains.stargame.base.Sprite;
 import ru.geekbrains.stargame.math.Rect;
 import ru.geekbrains.stargame.pool.BulletPool;
 import ru.geekbrains.stargame.pool.ExplosionPool;
@@ -24,17 +23,27 @@ public class MainShip extends Ship {
     private int leftPointer = INVALID_POINTER;
     private int rightPointer = INVALID_POINTER;
 
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool, Sound shootSound) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2, shootSound);
+    private float bonusTime = 0f;
+
+
+    public MainShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound shootSound, Sound shootSound2) {
+        super(atlas.findRegion("main_ship"), 1, 2, 2, shootSound, shootSound2);
         setHeightProportion(0.15f);
         this.bulletPool = bulletPool;
+        this.bulletRegion = atlas.findRegion("bulletMainShip");
+        this.explosionPool = explosionPool;
+        this.worldBounds = worldBounds;
+        startNewGame();
+    }
+
+    public void startNewGame() {
+        pos.x = worldBounds.pos.x;
         this.bulletV.set(0, 0.5f);
         this.bulletHeight = 0.01f;
         this.bulletDamage = 1;
         this.reloadInterval = 0.2f;
-        this.bulletRegion = atlas.findRegion("bulletMainShip");
-        this.explosionPool = explosionPool;
         this.hp = 100;
+        flushDestroy();
     }
 
     @Override
@@ -42,7 +51,17 @@ public class MainShip extends Ship {
         super.update(delta);
         pos.mulAdd(v, delta);
         reloadTimer += delta;
-        if (!isDestroyed() && reloadTimer >= reloadInterval) {
+        if (bonusTime >= delta){
+            mode = Mode.FIRE;
+            reloadInterval = 0.7f;
+            bulletDamage = 10;
+            bonusTime -= delta;
+        } else {
+            reloadInterval = 0.2f;
+            bulletDamage = 1;
+            mode = Mode.NORMAL;
+        }
+        if (reloadTimer >= reloadInterval) {
             shoot();
             reloadTimer = 0f;
         }
@@ -161,10 +180,29 @@ public class MainShip extends Ship {
         );
     }
 
+    public boolean isBonusCollision(Rect bonus){
+        return !(bonus.getRight() < getLeft()
+                || bonus.getLeft() > getRight()
+                || bonus.getBottom() > pos.y
+                || bonus.getTop() <getBottom()
+        );
+    }
+
     @Override
     public void destroy() {
         boom();
         hp = 0;
         super.destroy();
+    }
+
+    public void repair(int heal){
+        if (hp < 100){
+            if (100 - hp < heal) hp = 100;
+            else hp += heal;
+        }
+    }
+
+    public void setBonusTime(float bonusTime) {
+        this.bonusTime = bonusTime;
     }
 }

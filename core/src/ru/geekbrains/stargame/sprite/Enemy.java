@@ -18,6 +18,7 @@ public class Enemy extends Ship {
 
     private State state;
     private Vector2 descentV = new Vector2(0, -0.15f);
+    private float bonusDrop;
 
     public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound shootSound) {
         super(shootSound);
@@ -25,6 +26,7 @@ public class Enemy extends Ship {
         this.explosionPool = explosionPool;
         this.worldBounds = worldBounds;
         this.v.set(v0);
+        mode = Mode.NORMAL;
     }
 
     @Override
@@ -62,7 +64,8 @@ public class Enemy extends Ship {
             int bulletDamage,
             float reloadInterval,
             float height,
-            int hp
+            int hp,
+            float bonusDrop
     ) {
         this.regions = regions;
         this.v0.set(v0);
@@ -73,6 +76,7 @@ public class Enemy extends Ship {
         this.reloadInterval = reloadInterval;
         this.hp = hp;
         this.reloadTimer = reloadInterval;
+        this.bonusDrop = bonusDrop;
         setHeightProportion(height);
         v.set(descentV);
         state = State.DESCENT;
@@ -91,5 +95,15 @@ public class Enemy extends Ship {
         boom();
         hp = 0;
         super.destroy();
+    }
+
+    public Vector2 getPos(){
+        Vector2 ePos = new Vector2();
+        ePos.set(pos);
+        return ePos;
+    }
+
+    public float getBonusDrop() {
+        return bonusDrop;
     }
 }
