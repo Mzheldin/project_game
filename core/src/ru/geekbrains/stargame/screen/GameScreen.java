@@ -3,6 +3,7 @@ package ru.geekbrains.stargame.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import ru.geekbrains.stargame.base.ActionListener;
 import ru.geekbrains.stargame.base.Base2DScreen;
+import ru.geekbrains.stargame.base.FileWork;
 import ru.geekbrains.stargame.base.Font;
 import ru.geekbrains.stargame.math.Rect;
 import ru.geekbrains.stargame.pool.BonusPool;
@@ -73,6 +75,12 @@ public class GameScreen extends Base2DScreen implements ActionListener {
     private ButtonNewGame buttonNewGame;
 
     private Font font;
+    private FileWork fileWork;
+    private boolean isLoad;
+
+    public GameScreen(boolean isLoad){
+        this.isLoad = isLoad;
+    }
 
     @Override
     public void show() {
@@ -85,7 +93,7 @@ public class GameScreen extends Base2DScreen implements ActionListener {
         bgTexture = new Texture("bg.png");
         background = new Background(new TextureRegion(bgTexture));
         textureAtlas = new TextureAtlas("mainAtlas.tpack");
-        stars =new Star[STAR_COUNT];
+        stars = new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(textureAtlas);
         }
@@ -104,10 +112,13 @@ public class GameScreen extends Base2DScreen implements ActionListener {
         font = new Font("font/font.fnt", "font/font.png");
         font.setFontSize(0.02f);
 
+        fileWork = new FileWork("save.txt");
+
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.setLooping(true);
         music.play();
         startNewGame();
+        if (isLoad) fileWork.loadGame(this, mainShip, enemiesEmmiter);
     }
 
     @Override
@@ -247,6 +258,7 @@ public class GameScreen extends Base2DScreen implements ActionListener {
 
     @Override
     public void dispose() {
+        fileWork.saveGame(mainShip, this, enemiesEmmiter);
         bgTexture.dispose();
         textureAtlas.dispose();
         music.dispose();
@@ -318,6 +330,14 @@ public class GameScreen extends Base2DScreen implements ActionListener {
             bonus.setHeal(bonus.getHeal() + 2 * enemiesEmmiter.getLevel());
             bonus.setBonusTime(bonus.getBonusTime() + 2 * enemiesEmmiter.getLevel());
         }
+    }
+
+    public int getFrags(){
+        return frags;
+    }
+
+    public void setFrags(int frags){
+        this.frags = frags;
     }
 }
 

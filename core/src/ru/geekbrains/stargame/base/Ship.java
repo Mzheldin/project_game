@@ -84,6 +84,9 @@ public abstract class Ship extends Sprite {
     public int getHp() {
         return hp;
     }
+    public void setHp(int hp){
+        this.hp = hp;
+    }
 
     public boolean isFireMode() {
         return mode == Mode.FIRE;
